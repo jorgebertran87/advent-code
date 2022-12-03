@@ -1,0 +1,11 @@
+#!/bin/bash
+
+rucksacks=($(cat $1))
+
+characters=$(echo ${rucksacks[0]} | grep -o .)
+for character in $characters; do
+    if [[ "${rucksacks[1]}" == *"$character"* ]] && [[ "${rucksacks[2]}" == *"$character"* ]]  ; then
+        echo $character
+        break
+    fi    
+done

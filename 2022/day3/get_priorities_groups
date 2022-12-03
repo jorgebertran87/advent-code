@@ -1,0 +1,9 @@
+#!/bin/bash
+
+./split_groups $1
+
+for group in group*; do
+    ./get_priority_group $group
+done
+
+rm -rf group*

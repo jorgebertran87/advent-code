@@ -1,0 +1,15 @@
+#!/bin/bash
+
+characters_position=(a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z)
+
+
+priorities=$(./$1 $2)
+
+for priority in $priorities; do
+    for i in "${!characters_position[@]}"; do
+        if [[ "${characters_position[$i]}" == "$priority" ]]; then
+            let "position = $i + 1"
+            echo "$position"
+        fi
+    done
+done

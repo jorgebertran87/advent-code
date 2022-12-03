@@ -1,0 +1,121 @@
+#!/bin/bash
+
+option_score() {
+ option=$1
+ case $option in
+	X)
+	echo "1"
+        ;;
+	Y)
+	echo "2"
+        ;;
+	Z)
+	echo "3"
+        ;;
+ esac
+}
+
+round_score() {
+ your_option=$1
+ opponent_option=$2
+ case $your_option in
+ 	X)
+        case $opponent_option in
+        	A)
+        	echo "3"
+		;;
+        	B)
+        	echo "0"
+		;;
+        	C)
+        	echo "6"
+		;;
+	esac
+	;;
+ 	Y)
+        case $opponent_option in
+        	A)
+        	echo "6"
+		;;
+        	B)
+        	echo "3"
+		;;
+        	C)
+        	echo "0"
+		;;
+	esac
+	;;
+ 	Z)
+        case $opponent_option in
+        	A)
+        	echo "0"
+		;;
+        	B)
+        	echo "6"
+		;;
+        	C)
+        	echo "3"
+		;;
+	esac
+	;;
+ esac
+}
+
+your_option() {
+ opponent_option=$1
+ final_result=$2
+ case $final_result in
+ 	X)
+        case $opponent_option in
+		A)
+                echo "Z"
+		;;
+		B)
+                echo "X" 
+		;;
+		C)
+		echo "Y"
+		;;
+	esac
+	;;
+ 	Y)
+        case $opponent_option in
+		A)
+                echo "X"
+		;;
+		B)
+                echo "Y" 
+		;;
+		C)
+		echo "Z"
+		;;
+	esac
+	;;
+ 	Z)
+        case $opponent_option in
+		A)
+                echo "Y"
+		;;
+		B)
+                echo "Z" 
+		;;
+		C)
+		echo "X"
+		;;
+	esac
+	;;
+ esac
+}
+
+
+while read -r round; do
+    round=$(echo $round | sed "s/ //g")
+    opponent_option=${round:0:1}
+    final_result=${round:1:2}
+    yo=`your_option $opponent_option $final_result`
+    os=`option_score $yo`
+    rs=`round_score $yo $opponent_option`
+    let "total = rs + os"
+    echo $total
+done < rounds
+

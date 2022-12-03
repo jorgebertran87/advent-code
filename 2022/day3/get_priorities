@@ -1,0 +1,15 @@
+#!/bin/bash
+
+while read -r rucksack; do
+    rucksack_length=$(echo $rucksack | wc -c)
+    let "half = rucksack_length / 2"
+    item1=$(echo ${rucksack:0:$half} | grep -o . | sort | tr -d "\n" | tr -s "a-z" | tr -s "A-Z")
+    item2=$(echo ${rucksack:$half:$rucksack_length} | grep -o . | sort | tr -d "\n" | tr -s "a-z" | tr -s "A-Z")
+    characters=$(echo $item2 | grep -o .)
+    for character in $characters; do
+        if [[ "$item1" == "$character"* ]] || [[ "$item1" == *"$character"* ]] || [[ "$item1" == *"$character" ]] ; then
+	        echo $character
+            break
+        fi 
+    done
+done < <(grep "" $1)
