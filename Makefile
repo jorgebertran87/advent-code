@@ -16,3 +16,9 @@ rucksack.reorganization.1:
 rucksack.reorganization.2:
 	cd 2022/day3 && \
 	./sum_priorities get_priorities_groups rucksacks | awk '{s+=$$1} END {print s}'
+camp.cleanup.1:
+	cd 2022/day4 && \
+	./camp_cleanup assignment_pairs
+camp.cleanup.2:
+	cd 2022/day4 && \
+	./camp_cleanup_2 assignment_pairs

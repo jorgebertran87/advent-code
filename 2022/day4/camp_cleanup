@@ -1,0 +1,34 @@
+#!/bin/bash
+
+assignment_includes() {
+    s11=$1
+    s12=$2
+    s21=$3
+    s22=$4
+
+    if [ $s11 -le $s21 ] && [ $s12 -ge $s22 ]; then
+        echo "1"
+    else
+        echo "0"
+    fi        
+}
+
+count=0
+while read -r assignment_pair; do
+    pair=($(echo $assignment_pair | awk -F',' '{ print $1;print $2 }' | awk -F'-' '{ print $1;print $2 }'))
+    s11=${pair[0]}
+    s12=${pair[1]}
+    s21=${pair[2]}
+    s22=${pair[3]}
+
+    is_assigned=$(assignment_includes $s11 $s12 $s21 $s22)
+
+    if [ $is_assigned -eq 0 ]; then
+        is_assigned=$(assignment_includes $s21 $s22 $s11 $s12)
+    fi
+
+    let "count = count + is_assigned"
+done < <(grep "" $1)
+
+echo $count
+
