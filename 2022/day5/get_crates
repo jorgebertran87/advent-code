@@ -1,0 +1,4 @@
+#!/bin/bash
+
+head -n$(grep -ne "^ 1[.]*" input | sed -r "s/:(.*)//g") $1 > crates
+

@@ -22,3 +22,9 @@ camp.cleanup.1:
 camp.cleanup.2:
 	cd 2022/day4 && \
 	./camp_cleanup_2 assignment_pairs
+supply.stacks.1:
+	cd 2022/day5 && \
+	echo $$(./supply_stacks input) | tr -d ' '
+supply.stacks.2:
+	cd 2022/day5 && \
+	echo $$(./supply_stacks_2 input) | tr -d ' '

@@ -1,0 +1,89 @@
+generate_lines() {
+    num_columns=$1
+    let "limit = num_columns * 4 - 1"
+    OLDIFS=$IFS
+    IFS=''
+    rm -rf lines | true && touch lines
+    while read -r crate; do
+        count=1
+        line=()
+        while [ $count -le $limit ]; do
+            letter=${crate:$count:1}
+            if [[ $letter == " " ]]; then
+                letter="_"
+            fi
+
+            line+=($letter)
+            let "count = count + 4"
+        done
+        echo "${line[*]}" >> lines
+    done < <(sed '$ d' crates)
+    IFS=$OLDIFS
+}
+
+generate_new_line() {
+    num_columns=$1
+    new_line=""
+    count=0
+    while [ $count -lt $num_columns ]; do
+        new_line+="_"
+        let "count = count + 1"
+    done
+
+    echo $new_line
+}
+
+put_letter_in_column() {
+    num_lines=$1
+    to_position=$2
+    letter_from=$3
+    num_columns=$4
+
+    letter_found=0
+    num_lines_for_new_letter=$num_lines
+    while read -r line; do
+        letter_to=${line:$to_position:1}
+        if [[ $letter_to == "_" ]]; then
+            replaced_line_2=`echo $line | sed "s/^\(.\{$to_position\}\)./\1$letter_from/"`
+            sed -i $num_lines_for_new_letter's/'$line'/'$replaced_line_2'/' lines
+            letter_found=1
+            break
+        fi
+        let "num_lines_for_new_letter = num_lines_for_new_letter - 1"
+    done < <(tac lines | grep "")
+
+    if [ $letter_found -eq 0 ]; then
+        sed -i '1 i\'$(generate_new_line $num_columns) lines
+        replaced_line_3=`$(echo generate_new_line $num_columns) | sed "s/^\(.\{$to_position\}\)./\1$letter_from/"`
+        sed -i "/"$(generate_new_line $num_columns)"/c\\"${replaced_line_3} lines
+        let "extra_line = extra_line + 1"
+    fi
+}
+
+remove_letter_from_column() {
+    line=$1
+    from_position=$2
+    line_to_replace=$3
+
+    replaced_line=`echo $line | sed "s/^\(.\{$from_position\}\)./\1_/"`
+    sed -i ${line_to_replace}'s/'$line'/'$replaced_line'/' lines
+}
+
+print_first_letters() {
+    num_columns=$1
+    count=0
+    while [ $count -lt $num_columns ]; do
+        while read -r line; do
+            if [[ ${line:$count:1} != "_" ]]; then
+                echo ${line:$count:1}
+                break
+            fi    
+        done < <(grep "" lines)
+        let "count = count + 1"
+    done
+}
+
+remove_empty_lines() {
+    num_columns=$1
+    sed -i '/'$(generate_new_line $num_columns)'/d' lines
+}

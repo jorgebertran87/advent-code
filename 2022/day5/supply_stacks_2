@@ -1,0 +1,56 @@
+#!/bin/bash
+
+
+source ./utils
+
+move_letter() {
+    movement="$1"
+    num_columns=$2
+    num_letters=$(echo $movement | sed -r "s/from(.*)//g;s/move //g")
+    from=$(echo $movement | sed -r "s/to(.*)//g;s/move //g;s/(.*)from //g;s/ //g")
+    to=$(echo $movement | sed -r "s/(.*)to //g")
+    let "from_position = from - 1"
+    let "to_position = to - 1"
+    replaced_line=""
+    num_lines=$(cat lines | wc -l)
+    num_line=1
+    extra_line=0
+    while [ $num_line -le $num_lines ]; do
+        line=$(tail -n$num_lines lines | head -n$num_line | tail -n1)
+        letter_from=${line:$from_position:1}
+        if [ $num_letters -gt 0 ] && [[ $letter_from != "_" ]]; then
+            while [ $num_letters -gt 0 ]; do
+                let "num_line_reverse = num_line + num_letters - 1"
+                line=$(tail -n$num_lines lines | head -n$num_line_reverse | tail -n1)
+                letter_from=${line:$from_position:1}
+                let "line_to_replace = num_line_reverse + extra_line"
+                remove_letter_from_column $line $from_position $line_to_replace
+
+                put_letter_in_column $num_lines $to_position $letter_from $num_columns
+
+                let "num_letters = num_letters - 1" 
+            done
+            break
+        fi
+        let "num_line = num_line + 1"
+    done
+
+    remove_empty_lines $num_columns
+}
+
+./get_crates $1
+
+./get_movements $1
+
+columns=($(tail -n1 crates))
+num_columns="${#columns[@]}"
+
+generate_lines $num_columns
+
+while read -r movement; do
+    move_letter "$movement" $num_columns
+done < <(grep "" movements)
+
+print_first_letters $num_columns
+
+rm -rf lines crates movements
