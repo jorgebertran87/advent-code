@@ -1,0 +1,24 @@
+#!/bin/bash
+
+system_dir=$(pwd)/system
+mkdir $system_dir
+while read -r shell_line; do
+    if [[ "$shell_line" == *"$ cd"* ]]; then
+        directory=$(echo "$shell_line" | sed -r "s/(.*)cd //g")
+        if [[ "$directory" == "/" ]]; then
+            cd $system_dir
+        else
+            cd $directory
+        fi
+    elif [[ "$shell_line" != *"$ ls"* ]]; then
+        if [[ "$shell_line" != *"dir "* ]]; then
+            filename=$(echo $shell_line | sed -r "s/([0-9]*) //g")
+            size=$(echo $shell_line | sed "s/$filename//g") 
+            echo $size > $filename
+        else
+            "mk"$shell_line
+        fi
+    fi      
+done < <(grep "" $1)
+
+directories=$(find $system_dir -type d)

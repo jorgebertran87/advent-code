@@ -1,0 +1,22 @@
+#!/bin/bash
+
+source ./map_system
+
+total_size=70000000
+min_free_size=30000000
+used_size=$(find $system_dir/* -type f | xargs cat | awk -F',' '{sum+=$1;} END{print sum;}')
+let "unused_size = total_size - used_size"
+let "size_to_free = min_free_size - unused_size"
+
+min_size=70000000
+for directory in $directories; do
+    size=$(find $directory/* -type f | xargs cat | awk -F',' '{sum+=$1;} END{print sum;}')
+    
+    if [ $size -lt $min_size ] && [ $size -ge $size_to_free ]; then
+        min_size=$size
+    fi
+done
+
+echo $min_size
+
+rm -rf $system_dir    

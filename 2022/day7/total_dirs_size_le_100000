@@ -1,0 +1,17 @@
+#!/bin/bash
+
+source ./map_system
+
+total=0
+
+for directory in $directories; do
+    size=$(find $directory/* -type f | xargs cat | awk -F',' '{sum+=$1;} END{print sum;}')
+    
+    if [ $size -le 100000 ]; then
+        let "total = total + $size"
+    fi
+done
+
+echo $total
+
+rm -rf $system_dir

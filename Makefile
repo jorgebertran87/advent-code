@@ -34,3 +34,9 @@ tuning.trouble.1:
 tuning.trouble.2:
 	cd 2022/day6 && \
 	./first_maker input 14
+no.space.left.on.device.1:
+	cd 2022/day7 && \
+	./total_dirs_size_le_100000 input
+no.space.left.on.device.2:
+	cd 2022/day7 && \
+	./min_dir_size_to_free_space input
