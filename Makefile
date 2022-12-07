@@ -28,3 +28,9 @@ supply.stacks.1:
 supply.stacks.2:
 	cd 2022/day5 && \
 	echo $$(./supply_stacks_2 input) | tr -d ' '
+tuning.trouble.1:
+	cd 2022/day6 && \
+	./first_maker input 4
+tuning.trouble.2:
+	cd 2022/day6 && \
+	./first_maker input 14

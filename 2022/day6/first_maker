@@ -1,0 +1,19 @@
+#!/bin/bash
+
+marker_length=$2
+
+sequence=""
+while read -n1 c; do
+    sequence+=$c
+    length=${#sequence}
+    if [ $length -ge $marker_length ]; then
+        subsequence=`echo ${sequence: -$marker_length} |  grep -o . | sort | tr -d "\n"`
+        subsequence_without_duplications=$(echo $subsequence | tr -s 'a-z')
+        if [[ $subsequence == $subsequence_without_duplications ]]; then
+            echo $length
+            exit 0
+        fi
+    fi
+done < <(grep "" $1)
+
+exit 1
