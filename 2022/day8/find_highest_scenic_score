@@ -1,0 +1,91 @@
+#!/bin/bash
+
+source ./globals
+
+num_trees_visible() {
+    direction=$1
+    tree=$2
+    tree_line=$3
+    tree_column=$4
+    tree_position=$5
+
+    is_tree_visible=1
+    
+    case $direction in
+        top)
+        let "next_position = tree_line - 1"
+        ;;
+        bottom)
+        let "next_position = tree_line + 1"
+        ;;
+        left)
+        let "next_position = tree_column - 1"
+        ;;
+        right)
+        let "next_position = tree_column + 1"
+        ;;
+    esac
+
+    num_trees=0
+
+    is_next_position_valid=$(is_next_position_valid $direction $next_position)
+    while [ $is_tree_visible -eq 1 ] && [ $is_next_position_valid -eq 1 ]; do
+        case $direction in
+            top|bottom)
+            let "next_tree_position = edge_trees_lines*next_position + tree_column"
+            ;;
+            left|right)
+            let "next_tree_position = edge_trees_lines*tree_line + next_position"
+            ;;
+        esac
+        next_tree=${edge_trees:$next_tree_position:1}
+
+        let "num_trees = num_trees + 1"
+        if [ $next_tree -ge $tree ]; then
+            is_tree_visible=0
+        fi
+
+        case $direction in
+            top|left)
+            let "next_position = next_position - 1"
+            ;;
+            bottom|right)
+            let "next_position = next_position + 1"
+            ;;
+        esac
+        is_next_position_valid=$(is_next_position_valid $direction $next_position)    
+    done
+
+    if [ $num_trees -eq 0 ]; then
+        echo 1
+    else
+        echo $num_trees
+    fi
+}
+
+highest_scenic_score=1
+
+for (( i=1; i<($edge_trees_lines-1); i++ )); do
+    for (( j=1; j<($edge_trees_columns-1); j++ )); do
+        let "position = edge_trees_lines*i + j"
+        tree=${edge_trees:$position:1}
+        
+        if [ $tree -eq 0 ]; then
+            continue
+        fi
+        
+        num_trees_visible_on_top=$(num_trees_visible top $tree $i $j $position)
+        num_trees_visible_on_bottom=$(num_trees_visible bottom $tree $i $j $position)
+        num_trees_visible_on_left=$(num_trees_visible left $tree $i $j $position)
+        num_trees_visible_on_right=$(num_trees_visible right $tree $i $j $position)
+
+        let "scenic_score = num_trees_visible_on_top * num_trees_visible_on_bottom * num_trees_visible_on_left * num_trees_visible_on_right"
+
+        if [ $scenic_score -gt $highest_scenic_score ]; then
+            highest_scenic_score=$scenic_score
+        fi
+        
+    done
+done
+
+echo $highest_scenic_score

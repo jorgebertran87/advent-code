@@ -40,3 +40,9 @@ no.space.left.on.device.1:
 no.space.left.on.device.2:
 	cd 2022/day7 && \
 	./min_dir_size_to_free_space input
+treetop.tree.house.1:
+	cd 2022/day8 && \
+	./find_visible_trees input
+treetop.tree.house.2:
+	cd 2022/day8 && \
+	./find_highest_scenic_score input

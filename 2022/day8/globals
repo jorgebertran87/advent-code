@@ -1,0 +1,39 @@
+#!/bin/bash
+
+declare -g lines=$(grep "" $1 | wc -l)
+declare -g columns=$(head -n1 $1 | tr -d "\n" | wc -c)
+
+let "visible_trees = lines*2 + (columns-2)*2"
+
+declare -g edge_trees_lines=$(grep "" $1 | wc -l)
+
+declare -g edge_trees_columns=$(head -n1 $1 | tr -d "\n" | wc -c)
+
+declare -g edge_trees=$(grep "" $1 | tr -d "\n")
+
+is_next_position_valid() {
+    direction=$1
+    next_position=$2
+
+    is_next_position_valid=0
+
+    case $direction in
+        top|left)
+        if [ $next_position -ge 0 ]; then
+            is_next_position_valid=1
+        fi
+        ;;
+        bottom)
+        if [ $next_position -lt $edge_trees_lines ]; then
+            is_next_position_valid=1
+        fi
+        ;;
+        right)
+        if [ $next_position -lt $edge_trees_columns ]; then
+            is_next_position_valid=1
+        fi
+        ;;
+    esac
+
+    echo $is_next_position_valid
+}

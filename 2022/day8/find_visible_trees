@@ -1,0 +1,96 @@
+#!/bin/bash
+
+source ./globals
+
+is_tree_visible() {
+    direction=$1
+    tree=$2
+    tree_line=$3
+    tree_column=$4
+    tree_position=$5
+
+    is_tree_visible=1
+    
+    case $direction in
+        top)
+        let "next_position = tree_line - 1"
+        ;;
+        bottom)
+        let "next_position = tree_line + 1"
+        ;;
+        left)
+        let "next_position = tree_column - 1"
+        ;;
+        right)
+        let "next_position = tree_column + 1"
+        ;;
+    esac
+
+    is_next_position_valid=$(is_next_position_valid $direction $next_position)
+    while [ $is_tree_visible -eq 1 ] && [ $is_next_position_valid -eq 1 ]; do
+        case $direction in
+            top|bottom)
+            let "next_tree_position = edge_trees_lines*next_position + tree_column"
+            ;;
+            left|right)
+            let "next_tree_position = edge_trees_lines*tree_line + next_position"
+            ;;
+        esac
+        next_tree=${edge_trees:$next_tree_position:1}
+
+        if [ $next_tree -ge $tree ]; then
+            is_tree_visible=0
+        fi
+        case $direction in
+            top|left)
+            let "next_position = next_position - 1"
+            ;;
+            bottom|right)
+            let "next_position = next_position + 1"
+            ;;
+        esac
+        is_next_position_valid=$(is_next_position_valid $direction $next_position)    
+    done
+
+    echo $is_tree_visible
+}
+
+for (( i=1; i<($edge_trees_lines-1); i++ )); do
+    for (( j=1; j<($edge_trees_columns-1); j++ )); do
+        let "position = edge_trees_lines*i + j"
+        tree=${edge_trees:$position:1}
+        
+        if [ $tree -eq 0 ]; then
+            continue
+        fi
+        
+        is_tree_visible_on_top=$(is_tree_visible top $tree $i $j $position)
+
+        if [ $is_tree_visible_on_top -eq 1 ]; then
+            let "visible_trees = visible_trees + 1"
+            continue
+        fi
+
+        is_tree_visible_on_bottom=$(is_tree_visible bottom $tree $i $j $position)
+
+        if [ $is_tree_visible_on_bottom -eq 1 ]; then
+            let "visible_trees = visible_trees + 1"
+            continue
+        fi
+
+        is_tree_visible_on_left=$(is_tree_visible left $tree $i $j $position)
+
+        if [ $is_tree_visible_on_left -eq 1 ]; then
+            let "visible_trees = visible_trees + 1"
+            continue
+        fi
+
+        is_tree_visible_on_right=$(is_tree_visible right $tree $i $j $position)
+
+        if [ $is_tree_visible_on_right -eq 1 ]; then
+            let "visible_trees = visible_trees + 1"
+        fi
+    done
+done
+
+echo $visible_trees
